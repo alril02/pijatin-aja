@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pijatin Aja | Aplikasi Pijat Online</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background: #034806;
+        color: #bec406cb;
+        margin: 0;
+        padding: 0;
+      }
+      .header {
+        background: #0dcf03;
+        padding: 15px;
+        text-align: center;
+        color: #fff;
+      }
+      .header a {
+        color: #fff;
+        margin-left: 20px;
+        text-decoration: none;
+      }
+      .content {
+        padding: 20px;
+      }
+      input,
+      select,
+      button {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border: none;
+      }
+      button {
+        background: #facc15;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .card {
+        max-width: 380px;
+        margin: 40px auto;
+        background: #041c00;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+      }
+      a {
+        color: #facc15;
+        cursor: pointer;
+        text-decoration: underline;
+      }
+      .terapis-card {
+        background: #1e293b;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .terapis-card img {
+        width: 100%;
+        border-radius: 8px;
+      }
+      .terapis-card a {
+        color: #facc15;
+        display: block;
+        margin-top: 10px;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Halaman Login -->
+    <div id="loginPage" class="card">
+      <h1>Pijatin Aja</h1>
+      <h2>Login</h2>
+      <input type="text" id="login-username" placeholder="Username" />
+      <input type="password" id="login-password" placeholder="Password" />
+      <button onclick="login()">Masuk</button>
+      <p>Belum punya akun? <a onclick="showRegister()">Daftar di sini</a></p>
+    </div>
+
+    <!-- Halaman Register -->
+    <div id="registerPage" class="card" style="display: none">
+      <h1>Pijatin Aja</h1>
+      <h2>Register</h2>
+      <input type="text" id="register-username" placeholder="Username" />
+      <input type="password" id="register-password" placeholder="Password" />
+      <button onclick="register()">Daftar</button>
+      <p>Sudah punya akun? <a onclick="showLogin()">Login di sini</a></p>
+    </div>
+
+    <!-- Halaman Home -->
+    <div id="homePage" style="display: none">
+      <div class="header">
+        <h1>Pijatin Aja</h1>
+        <a onclick="showRiwayat()">Riwayat Pesanan</a>
+        <a onclick="logout()" style="margin-left: 20px">Keluar</a>
+      </div>
+      <div class="content">
+        <h2>Daftar Terapis</h2>
+        <div class="terapis-card">
+          <img src="https://via.placeholder.com/350x200?text=Terapis+1" />
+          <h3>Geral</h3>
+          <p>Keahlian: Pijat Tradisional, Refleksi</p>
+          <button onclick="showBooking('Geral')">Booking Sekarang</button>
+        </div>
+        <div class="terapis-card">
+          <img src="https://via.placeholder.com/350x200?text=Terapis+2" />
+          <h3>Aril</h3>
+          <p>Keahlian: Pijat Ibu Hamil, Pijat tambahan, pijat apa saja</p>
+          <button onclick="showBooking('Aril')">Booking Sekarang</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Halaman Booking -->
+    <div id="bookingPage" style="display: none">
+      <div class="header">
+        <h1>Booking Pijat</h1>
+        <a onclick="showHome()">Kembali</a>
+      </div>
+      <div class="content">
+        <h3 id="namaTerapis"></h3>
+        <input type="text" id="nama" placeholder="Nama Anda" />
+        <input type="text" id="lokasi" placeholder="Lokasi" />
+        <input type="datetime-local" id="waktu" />
+        <select id="layanan">
+          <option>Pijat Tradisional</option>
+          <option>Pijat Refleksi</option>
+          <option>Pijat tambahan</option>
+        </select>
+        <button onclick="booking()">Pesan Sekarang</button>
+      </div>
+    </div>
+
+    <!-- Halaman Riwayat -->
+    <div id="riwayatPage" style="display: none">
+      <div class="header">
+        <h1>Riwayat Pesanan</h1>
+        <a onclick="showHome()">Kembali</a>
+      </div>
+      <div class="content" id="riwayat"></div>
+    </div>
+
+    <script>
+      let currentTerapis = ''
+
+      function showRegister() {
+        document.getElementById('loginPage').style.display = 'none'
+        document.getElementById('registerPage').style.display = 'block'
+      }
+
+      function showLogin() {
+        document.getElementById('registerPage').style.display = 'none'
+        document.getElementById('loginPage').style.display = 'block'
+      }
+
+      function register() {
+        const u = document.getElementById('register-username').value
+        const p = document.getElementById('register-password').value
+        if (!u || !p) {
+          alert('Isi semua kolom!')
+          return
+        }
+        if (localStorage.getItem('user_' + u)) {
+          alert('Username sudah terdaftar!')
+          return
+        }
+        localStorage.setItem('user_' + u, p)
+        alert('Pendaftaran berhasil!')
+        showLogin()
+      }
+
+      function login() {
+        const u = document.getElementById('login-username').value
+        const p = document.getElementById('login-password').value
+        const pass = localStorage.getItem('user_' + u)
+        if (p === pass) {
+          document.getElementById('loginPage').style.display = 'none'
+          document.getElementById('homePage').style.display = 'block'
+        } else {
+          alert('Username atau password salah!')
+        }
+      }
+
+      function logout() {
+        location.reload()
+      }
+
+      function showHome() {
+        document.getElementById('bookingPage').style.display = 'none'
+        document.getElementById('riwayatPage').style.display = 'none'
+        document.getElementById('homePage').style.display = 'block'
+      }
+
+      function showBooking(terapis) {
+        currentTerapis = terapis
+        document.getElementById('namaTerapis').innerText = 'Terapis: ' + terapis
+        document.getElementById('homePage').style.display = 'none'
+        document.getElementById('bookingPage').style.display = 'block'
+      }
+
+      function booking() {
+        const nama = document.getElementById('nama').value
+        const lokasi = document.getElementById('lokasi').value
+        const waktu = document.getElementById('waktu').value
+        const layanan = document.getElementById('layanan').value
+        if (!nama || !lokasi || !waktu) {
+          alert('Isi semua kolom!')
+          return
+        }
+        const data = { nama, lokasi, waktu, layanan, terapis: currentTerapis }
+        let riwayat = JSON.parse(localStorage.getItem('riwayat')) || []
+        riwayat.push(data)
+        localStorage.setItem('riwayat', JSON.stringify(riwayat))
+        alert('Pesanan berhasil!')
+        showHome()
+      }
+
+      function showRiwayat() {
+        document.getElementById('homePage').style.display = 'none'
+        document.getElementById('riwayatPage').style.display = 'block'
+        tampilkanRiwayat()
+      }
+
+      function tampilkanRiwayat() {
+        const data = JSON.parse(localStorage.getItem('riwayat')) || []
+        const div = document.getElementById('riwayat')
+        div.innerHTML = ''
+        if (data.length === 0) {
+          div.innerHTML = '<p>Belum ada pesanan.</p>'
+          return
+        }
+        data.forEach((d) => {
+          div.innerHTML += `<div class="terapis-card">
+      <h3>${d.layanan}</h3>
+      <p>Terapis: ${d.terapis}</p>
+      <p>Nama: ${d.nama}</p>
+      <p>Lokasi: ${d.lokasi}</p>
+      <p>Waktu: ${d.waktu}</p>
+    </div>`
+        })
+      }
+    </script>
+  </body>
+</html>
