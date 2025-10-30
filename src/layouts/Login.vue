@@ -11,6 +11,7 @@
           icon="menu"
           @click="toggleLeftDrawer"
         />
+
         <q-toolbar-title>
           Header
         </q-toolbar-title>
